@@ -2,6 +2,7 @@ import requests
 from requests.sessions import Session
 import time
 import schedule
+from bs4 import BeautifulSoup
 
 class Account:
     headers = {
@@ -49,9 +50,9 @@ class Account:
         return s
 
 
-def tryBook():
+def tryBook(token):
     params = (
-    ('Token', '7611757795'),
+    ('Token', token),
     ('StartTimestamp', '2022-01-08T19:00'),
     ('LengthMinutes', '180'),
     ('GroupId', '16'),
@@ -66,16 +67,30 @@ def tryBook():
     except:
         print('Lets try again tomorrow')
 
+def getToken(s):
+    URL = 'https://www.afbostader.se/dina/sidor/boka-bastu/'
+    r = s.get(URL)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    try:
+        value = soup.find('input', {'id': 'hidAptusToken'}).get('value')
+        print(value)
+        return value
+    except Exception as e:
+        print("Got unhandled exception %s" % str(e))
+    #mydivs = soup.find_all("div", {"class": "price-ticket__fluctuations"})
+    
 if __name__ == "__main__":
     # Generates data
     Py = Account('axel.tobieson@gmail.com', 'feeder99')
     #  Logins to AFB and return session
+    
     s = Py.login()
-
+    token = getToken(s)
+    tryBook(s)
     #schedule everyday - 1min margin
     schedule.every().day.at("19:31").do(tryBook)
 
-    while True:
+    while False:
         schedule.run_pending()
         time.sleep(1)
     
