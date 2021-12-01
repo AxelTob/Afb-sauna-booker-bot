@@ -71,6 +71,8 @@ if __name__ == "__main__":
     Py = Account('axel.tobieson@gmail.com', 'feeder99')
     #  Logins to AFB and return session
     s = Py.login()
+    print(s.text)
+    print(s.headers)
     availableDates(s)
     
         
