@@ -5,9 +5,9 @@ After living over a year in my student apartment building and never been able to
 The problem we face now is that people book months in advance, which we are never able to organise. Also the booking system lacks FILTER functionality, so all dates shows as being available but we and Everyone else is Only interested in the latest time. Between 19-22. Takes ages to go through.
 
 So first script.
-`Checkdates` Lists all available dates where 19-22 is Bookable. Lists them from earliest - latest.
+`Checkdates`.. Lists all available dates where 19-22 is Bookable. Lists them from earliest - latest.
 
-`SaunaSniper` We suspect many people book without knowing if they can. The booking is realesed if they don't show up (check-in) after 30 minutes and then someone else can book the time-slot. This script will wake-up at 19.30 every day and try book if possible. 
+The second script `SaunaSniper`.. We suspect many people book without knowing if they can. The booking is realesed if they don't show up (check-in) after 30 minutes and then someone else can book the time-slot. This script will wake-up at 19.30 every day and try book if possible. 
 
 <!-- Need to add -->
 ## Need to add
