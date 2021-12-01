@@ -1,5 +1,7 @@
 import requests
 from requests.sessions import Session
+import time
+import schedule
 
 class Account:
     headers = {
@@ -46,30 +48,36 @@ class Account:
         s.post('https://www.afbostader.se/', headers=self.headers, data=self.data)
         return s
 
-'axel.tobieson@gmail.com', 'feeder99'
-Py = Account('axel.tobieson@gmail.com', 'feeder99')
 
-s = Py.login()
-
-
-params = (
-    ('Token', '5882112625'),
-    ('DateFrom', '2021-11-30'),
-    ('DateTo', '2022-01-14'),
-    ('Groups', '16'),
+def tryBook():
+    params = (
+    ('Token', '7611757795'),
+    ('StartTimestamp', '2022-01-08T19:00'),
+    ('LengthMinutes', '180'),
+    ('GroupId', '16'),
+    ('MaxWaitSeconds', '60'),
 )
-response = s.get('https://aptusbookingservice.afbostader.se/bookingservice.svc/GetCalendarData', params=params)
-js = response.json()
-print(js)
-i = 0
-for day in js['Days']:
-    #print(day.type)
-    passes = day['DayGroups'][0]['BookablePasses']
-    if passes:
-        #print(passes)
-        for time in passes:
-            print(time)
-            if time['No'] == 4:
-                print('wey')
-        if 4 in passes[0].values():
-            print(day['Date'])
+
+    response = requests.get('https://aptusbookingservice.afbostader.se/bookingservice.svc/Book', params=params)
+    print(response.json())
+    try:
+        if response.json()['UnBookable']:
+            print('success')
+    except:
+        print('Lets try again tomorrow')
+
+if __name__ == "__main__":
+    # Generates data
+    Py = Account('axel.tobieson@gmail.com', 'feeder99')
+    #  Logins to AFB and return session
+    s = Py.login()
+
+    #schedule everyday - 1min margin
+    schedule.every().day.at("19:31").do(tryBook)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+    
+    
+        
