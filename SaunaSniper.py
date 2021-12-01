@@ -1,6 +1,7 @@
 import requests
 from requests.sessions import Session
 import time
+from schedule import * 
 import schedule
 from bs4 import BeautifulSoup
 
@@ -50,16 +51,16 @@ class Account:
         return s
 
 
-def tryBook(token):
+def tryBook(s, token):
     params = (
     ('Token', token),
-    ('StartTimestamp', '2022-01-08T19:00'),
+    ('StartTimestamp', '2022-01-09T19:00'),
     ('LengthMinutes', '180'),
     ('GroupId', '16'),
     ('MaxWaitSeconds', '60'),
 )
 
-    response = requests.get('https://aptusbookingservice.afbostader.se/bookingservice.svc/Book', params=params)
+    response = s.get('https://aptusbookingservice.afbostader.se/bookingservice.svc/Book', params=params)
     print(response.json())
     try:
         if response.json()['UnBookable']:
@@ -78,19 +79,24 @@ def getToken(s):
     except Exception as e:
         print("Got unhandled exception %s" % str(e))
     #mydivs = soup.find_all("div", {"class": "price-ticket__fluctuations"})
-    
-if __name__ == "__main__":
-    # Generates data
+
+def main():
+    print('called')
+    # generate data
     Py = Account('axel.tobieson@gmail.com', 'feeder99')
     #  Logins to AFB and return session
-    
     s = Py.login()
+    # fetch token
     token = getToken(s)
-    tryBook(s)
-    #schedule everyday - 1min margin
-    schedule.every().day.at("19:31").do(tryBook)
+    # try book, check if it's available.
+    tryBook(s, token)
 
-    while False:
+if __name__ == "__main__":
+    
+    #schedule everyday - 1min margin
+    schedule.every().day.at("19.31").do(main)
+
+    while True:
         schedule.run_pending()
         time.sleep(1)
     

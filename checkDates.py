@@ -1,6 +1,6 @@
 import requests
 from requests.sessions import Session
-
+from bs4 import BeautifulSoup
 class Account:
     headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0',
@@ -41,15 +41,16 @@ class Account:
 }
         
     
-    def login(self) -> Session:
+    def login(self):
+        """Logins to AFB and return session"""
         s = requests.Session()
         s.post('https://www.afbostader.se/', headers=self.headers, data=self.data)
         return s
 
 
-def availableDates(s):
+def availableDates(s, token):
     params = (
-        ('Token', '2238348584'),
+        ('Token', token),
         ('DateFrom', '2021-11-30'),
         ('DateTo', '2022-01-14'),
         ('Groups', '16'),
@@ -66,13 +67,26 @@ def availableDates(s):
                 if time['No'] == 4:
                     print(day['Date'])
 
+def getToken(s):
+    """Return the unique token. Required to make call to booking service"""
+    URL = 'https://www.afbostader.se/dina/sidor/boka-bastu/'
+    r = s.get(URL)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    try:
+        value = soup.find('input', {'id': 'hidAptusToken'}).get('value')
+        return value
+    except Exception as e:
+        print("Got unhandled exception %s" % str(e))
+
+
 if __name__ == "__main__":
     # Generates data
     Py = Account('axel.tobieson@gmail.com', 'feeder99')
     #  Logins to AFB and return session
     s = Py.login()
-    print(s.text)
-    print(s.headers)
-    availableDates(s)
+    token = getToken(s)
+
+    
+    availableDates(s, token)
     
         
