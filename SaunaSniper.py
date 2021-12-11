@@ -1,29 +1,14 @@
+import gmail
 import requests
 from requests.sessions import Session
 import time
 from schedule import * 
 import schedule
 from bs4 import BeautifulSoup
+import datetime
 
 class Account:
-    headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Origin': 'https://www.afbostader.se',
-    'Connection': 'keep-alive',
-    'Referer': 'https://www.afbostader.se/',
-    'Upgrade-Insecure-Requests': '1',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-Fetch-User': '?1',
-    'TE': 'trailers',
-}
-
-
-
+    
     def __init__(self, email, password) -> None:
         self.data =  {
   '__EVENTTARGET': '',
@@ -47,14 +32,20 @@ class Account:
     
     def login(self) -> Session:
         s = requests.Session()
-        s.post('https://www.afbostader.se/', headers=self.headers, data=self.data)
+        s = requests.get('https://www.afbostader.se/')
+        s.post('https://www.afbostader.se/', data=self.data)
         return s
 
+def getCurrentDateTime():
+    t = datetime.datetime().now().date()
+    date = t.strftime('%y-%m-%d')
+    return date + 'T19:00'
 
 def tryBook(s, token):
+
     params = (
     ('Token', token),
-    ('StartTimestamp', '2022-01-09T19:00'),
+    ('StartTimestamp', getCurrentDateTime()),
     ('LengthMinutes', '180'),
     ('GroupId', '16'),
     ('MaxWaitSeconds', '60'),
@@ -65,8 +56,10 @@ def tryBook(s, token):
     try:
         if response.json()['UnBookable']:
             print('success')
+            
     except:
         print('Lets try again tomorrow')
+        
 
 def getToken(s):
     URL = 'https://www.afbostader.se/dina/sidor/boka-bastu/'
@@ -82,8 +75,8 @@ def getToken(s):
 
 def main():
     print('called')
-    # generate data
-    Py = Account('axel.tobieson@gmail.com', 'feeder99')
+    # generate data - PUT EMAIL AND PASSWORD HERE for afb
+    Py = Account('EMAIL', 'PASSWORD')
     #  Logins to AFB and return session
     s = Py.login()
     # fetch token
@@ -91,10 +84,15 @@ def main():
     # try book, check if it's available.
     tryBook(s, token)
 
+
+#def notifyy():
+    #gm = gmail()
+    #gm.notify()
+
 if __name__ == "__main__":
     
     #schedule everyday - 1min margin
-    schedule.every().day.at("19.31").do(main)
+    schedule.every().day.at("19.30").do(main)
 
     while True:
         schedule.run_pending()
