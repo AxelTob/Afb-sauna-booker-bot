@@ -2,23 +2,6 @@ import requests
 from requests.sessions import Session
 from bs4 import BeautifulSoup
 class Account:
-    headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:94.0) Gecko/20100101 Firefox/94.0',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Origin': 'https://www.afbostader.se',
-    'Connection': 'keep-alive',
-    'Referer': 'https://www.afbostader.se/',
-    'Upgrade-Insecure-Requests': '1',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-Fetch-User': '?1',
-    'TE': 'trailers',
-}
-
-
 
     def __init__(self, email, password) -> None:
         self.data =  {
@@ -43,15 +26,17 @@ class Account:
     
     def login(self):
         """Logins to AFB and return session"""
+        URL = 'https://www.afbostader.se/'
         s = requests.Session()
-        s.post('https://www.afbostader.se/', headers=self.headers, data=self.data)
+        #s.get(URL)
+        s.post(URL, data=self.data)
         return s
 
 
 def availableDates(s, token):
     params = (
         ('Token', token),
-        ('DateFrom', '2021-11-30'),
+        ('DateFrom', '2021-12-07'),
         ('DateTo', '2022-01-14'),
         ('Groups', '16'),
     )
@@ -81,7 +66,7 @@ def getToken(s):
 
 if __name__ == "__main__":
     # Generates data
-    Py = Account('axel.tobieson@gmail.com', 'feeder99')
+    Py = Account('EMAIL', 'PASS')
     #  Logins to AFB and return session
     s = Py.login()
     token = getToken(s)
