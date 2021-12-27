@@ -12,7 +12,7 @@ The second script `SaunaSniper`.. We suspect many people book without knowing if
 <!-- Need to add -->
 ## Need to add
 
-- [ ] A way to generate new token for booking (seperate System). Becomes invalid after awhile
+- [X] A way to generate new token for booking (seperate System). Becomes invalid after awhile
 - [ ] Notice us if SaunaSniper booked a time. Email?
 - [ ] Maybe add functionality for automatically check available dates, if someone cancel.
 
