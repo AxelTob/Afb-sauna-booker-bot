@@ -1,4 +1,3 @@
-import gmail
 import requests
 from requests.sessions import Session
 import time
@@ -6,6 +5,32 @@ from schedule import *
 import schedule
 from bs4 import BeautifulSoup
 import datetime
+
+import smtplib, ssl
+
+def send_mail():
+    smtp_server = "smtp.gmail.com"
+    port = 587  # For starttls
+    sender_email = "bibbi12002@gmail.com"
+    password = "12qw34er56ty78ui"
+
+    # Create a secure SSL context
+    context = ssl.create_default_context()
+
+    # Try to log in to server and send email
+    try:
+        server = smtplib.SMTP(smtp_server, port)
+        server.ehlo()  # Can be omitted
+        server.starttls(context=context)  # Secure the connection
+        server.ehlo()  # Can be omitted
+        server.login(sender_email, password)
+        # TODO: Send email here
+    except Exception as e:
+        # Print any error messages to stdout
+        server.sendmail(sender_email, sender_email, "We got the booking. Get ready for Sauna today.")
+        print(e)
+    finally:
+        server.quit()
 
 class Account:
     
@@ -32,20 +57,20 @@ class Account:
     
     def login(self) -> Session:
         s = requests.Session()
-        s = requests.get('https://www.afbostader.se/')
+        s.get('https://www.afbostader.se/')
         s.post('https://www.afbostader.se/', data=self.data)
         return s
 
 def getCurrentDateTime():
-    t = datetime.datetime().now().date()
+    t = datetime.date.today()
     date = t.strftime('%y-%m-%d')
-    return date + 'T19:00'
+    return date
 
 def tryBook(s, token):
 
     params = (
     ('Token', token),
-    ('StartTimestamp', getCurrentDateTime()),
+    ('StartTimestamp', getCurrentDateTime()+ 'T19:00'),
     ('LengthMinutes', '180'),
     ('GroupId', '16'),
     ('MaxWaitSeconds', '60'),
@@ -59,9 +84,11 @@ def tryBook(s, token):
             
     except:
         print('Lets try again tomorrow')
+        send_mail()
         
 
 def getToken(s):
+    """Return the unique token. Required to make call to booking service"""
     URL = 'https://www.afbostader.se/dina/sidor/boka-bastu/'
     r = s.get(URL)
     soup = BeautifulSoup(r.content, 'html.parser')
@@ -76,7 +103,7 @@ def getToken(s):
 def main():
     print('called')
     # generate data - PUT EMAIL AND PASSWORD HERE for afb
-    Py = Account('EMAIL', 'PASSWORD')
+    Py = Account('axel.tobieson@gmail.com', 'feeder99')
     #  Logins to AFB and return session
     s = Py.login()
     # fetch token
@@ -92,11 +119,12 @@ def main():
 if __name__ == "__main__":
     
     #schedule everyday - 1min margin
-    schedule.every().day.at("19.30").do(main)
+    main()
+    # schedule.every().day.at("18:09").do(main)
 
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
     
     
         

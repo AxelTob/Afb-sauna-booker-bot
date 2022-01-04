@@ -1,6 +1,10 @@
 import requests
 from requests.sessions import Session
 from bs4 import BeautifulSoup
+import time
+import datetime
+import calendar
+
 class Account:
 
     def __init__(self, email, password) -> None:
@@ -32,17 +36,31 @@ class Account:
         s.post(URL, data=self.data)
         return s
 
+def getCurrentDateTime():
+    t = datetime.date.today()
+    date = t.strftime('%y-%m-%d')
+    return date
+
+def futureDate(months):
+    """Returns date X months from now. Did not get dateutil to work"""
+    sourcedate = datetime.date.today()
+    month = sourcedate.month - 1 + months
+    year = sourcedate.year + month // 12
+    month = month % 12 + 1
+    day = min(sourcedate.day, calendar.monthrange(year,month)[1])
+    return f'{year}-{month}-{day}'
 
 def availableDates(s, token):
+    date = getCurrentDateTime()
+    future_date = futureDate(months=2)
     params = (
         ('Token', token),
-        ('DateFrom', '2021-12-07'),
-        ('DateTo', '2022-01-14'),
+        ('DateFrom', date),
+        ('DateTo', future_date), 
         ('Groups', '16'),
     )
     response = s.get('https://aptusbookingservice.afbostader.se/bookingservice.svc/GetCalendarData', params=params)
     js = response.json()
-
     i = 0
     for day in js['Days']:
         passes = day['DayGroups'][0]['BookablePasses']
