@@ -103,7 +103,9 @@ def getToken(s):
 def main():
     print('called')
     # generate data - PUT EMAIL AND PASSWORD HERE for afb
-    Py = Account('axel.tobieson@gmail.com', 'feeder99')
+    EMAIL = ''
+    PASS = ''
+    Py = Account(EMAIL, PASS)
     #  Logins to AFB and return session
     s = Py.login()
     # fetch token
