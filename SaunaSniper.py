@@ -11,8 +11,8 @@ import smtplib, ssl
 def send_mail():
     smtp_server = "smtp.gmail.com"
     port = 587  # For starttls
-    sender_email = "bibbi12002@gmail.com"
-    password = "12qw34er56ty78ui"
+    sender_email = "demo@gmail.com"
+    password = "password"
 
     # Create a secure SSL context
     context = ssl.create_default_context()
