@@ -83,8 +83,9 @@ def getToken(s):
 
 
 if __name__ == "__main__":
-    # Generates data
-    Py = Account('EMAIL', 'PASS')
+    EMAIL = ''
+    PASS = ''
+    Py = Account(EMAIL, PASS)
     #  Logins to AFB and return session
     s = Py.login()
     token = getToken(s)
